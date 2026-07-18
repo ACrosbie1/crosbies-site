@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Invoice Calculator | Crosbies Hot Sauce (Internal)</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --papyrus-dark:#2b1a0e; --gold:#d4a24c; --gold-bright:#f0c674;
+    --gold-deep:#8b6500; --sand:#e8d3a5; --cream:#f7ecd2; --ember:#c1440e;
+  }
+  *{box-sizing:border-box;}
+  body{
+    background:radial-gradient(ellipse at top, #4a3218 0%, #2b1a0e 60%, #1a0f08 100%);
+    color:var(--cream); font-family:'EB Garamond', serif; min-height:100vh;
+    padding:40px 16px; margin:0;
+  }
+  .wrap{ max-width:760px; margin:0 auto; }
+  h1{
+    font-family:'Cinzel', serif; text-align:center; color:var(--gold-bright);
+    font-size:1.7rem; letter-spacing:1px; margin-bottom:6px;
+  }
+  .sub{ text-align:center; color:var(--sand); opacity:0.8; margin-bottom:30px; font-size:0.95rem;}
+  .card{
+    background:linear-gradient(160deg, rgba(90,61,31,0.5), rgba(43,26,14,0.7));
+    border:1px solid var(--gold); border-radius:14px; padding:26px;
+    box-shadow:0 8px 30px rgba(0,0,0,0.35); margin-bottom:24px;
+  }
+  table{ width:100%; border-collapse:collapse; margin-bottom:14px; }
+  th{
+    font-family:'Cinzel', serif; font-size:0.78rem; letter-spacing:1px;
+    text-transform:uppercase; color:var(--gold); text-align:left;
+    padding:6px 6px; border-bottom:1px solid rgba(212,162,76,0.4);
+  }
+  td{ padding:6px; }
+  input[type=text], input[type=number]{
+    width:100%; padding:8px 10px; background:rgba(0,0,0,0.25);
+    border:1px solid rgba(212,162,76,0.5); border-radius:6px;
+    color:var(--cream); font-family:'EB Garamond', serif; font-size:0.95rem;
+  }
+  input[type=number]{ text-align:right; }
+  .line-total{ text-align:right; font-family:'Cinzel', serif; color:var(--gold-bright); min-width:80px; }
+  .row-actions{ text-align:center; width:36px; }
+  .remove-btn{
+    background:none; border:none; color:var(--ember); cursor:pointer; font-size:1.1rem;
+  }
+  .add-btn, .print-btn{
+    font-family:'Cinzel', serif; letter-spacing:1px; text-transform:uppercase;
+    font-size:0.8rem; padding:10px 18px; border-radius:8px; border:none; cursor:pointer;
+  }
+  .add-btn{
+    background:transparent; border:1px solid var(--gold); color:var(--gold-bright);
+  }
+  .print-btn{
+    background:linear-gradient(135deg, var(--gold-deep), var(--gold)); color:#241505;
+    font-weight:700; width:100%; margin-top:8px;
+  }
+  .settings{ display:flex; gap:18px; flex-wrap:wrap; margin-bottom:6px; }
+  .settings label{
+    font-family:'Cinzel', serif; font-size:0.78rem; letter-spacing:1px;
+    text-transform:uppercase; color:var(--gold); display:block; margin-bottom:6px;
+  }
+  .settings .field{ flex:1; min-width:140px; }
+  .summary{ margin-top:10px; }
+  .summary-row{
+    display:flex; justify-content:space-between; padding:6px 0;
+    font-family:'Cinzel', serif; font-size:0.95rem; color:var(--sand);
+  }
+  .summary-row.total{
+    border-top:1px solid var(--gold); margin-top:6px; padding-top:12px;
+    font-size:1.25rem; color:var(--gold-bright); font-weight:700;
+  }
+  @media print{
+    body{ background:#fff; color:#000; }
+    .add-btn, .print-btn, .row-actions{ display:none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Invoice Calculator</h1>
+  <div class="sub">Internal tool &middot; Crosbies Hot Sauce Corp &middot; auto-calculates totals with tax + fees</div>
+
+  <div class="card">
+    <table id="lineTable">
+      <thead>
+        <tr>
+          <th style="width:45%">Description</th>
+          <th style="width:15%">Qty</th>
+          <th style="width:20%">Unit Price ($)</th>
+          <th style="width:15%">Line Total</th>
+          <th class="row-actions"></th>
+        </tr>
+      </thead>
+      <tbody id="lineBody"></tbody>
+    </table>
+    <button class="add-btn" onclick="addRow()">+ Add Line Item</button>
+  </div>
+
+  <div class="card">
+    <div class="settings">
+      <div class="field">
+        <label>Tax Rate (%)</label>
+        <input type="number" id="taxRate" value="0" step="0.01" min="0" oninput="calc()">
+      </div>
+      <div class="field">
+        <label>Additional Fees ($)</label>
+        <input type="number" id="fees" value="0" step="0.01" min="0" oninput="calc()">
+      </div>
+    </div>
+    <div class="summary" id="summary"></div>
+    <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+  </div>
+</div>
+
+<script>
+  let rowId = 0;
+
+  function addRow(desc='', qty=1, price=0){
+    rowId++;
+    const tbody = document.getElementById('lineBody');
+    const tr = document.createElement('tr');
+    tr.id = 'row-' + rowId;
+    tr.innerHTML = `
+      <td><input type="text" value="${desc}" oninput="calc()" placeholder="e.g. Habanero Hot Sauce 5oz"></td>
+      <td><input type="number" value="${qty}" min="0" step="1" oninput="calc()"></td>
+      <td><input type="number" value="${price}" min="0" step="0.01" oninput="calc()"></td>
+      <td class="line-total">$0.00</td>
+      <td class="row-actions"><button class="remove-btn" onclick="removeRow(${rowId})">&times;</button></td>
+    `;
+    tbody.appendChild(tr);
+    calc();
+  }
+
+  function removeRow(id){
+    const el = document.getElementById('row-' + id);
+    if (el) el.remove();
+    calc();
+  }
+
+  function calc(){
+    let subtotal = 0;
+    document.querySelectorAll('#lineBody tr').forEach(tr => {
+      const inputs = tr.querySelectorAll('input');
+      const qty = parseFloat(inputs[1].value) || 0;
+      const price = parseFloat(inputs[2].value) || 0;
+      const lineTotal = qty * price;
+      tr.querySelector('.line-total').textContent = '$' + lineTotal.toFixed(2);
+      subtotal += lineTotal;
+    });
+
+    const taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
+    const fees = parseFloat(document.getElementById('fees').value) || 0;
+    const taxAmount = subtotal * (taxRate / 100);
+    const total = subtotal + taxAmount + fees;
+
+    document.getElementById('summary').innerHTML = `
+      <div class="summary-row"><span>Subtotal</span><span>$${subtotal.toFixed(2)}</span></div>
+      <div class="summary-row"><span>Tax (${taxRate}%)</span><span>$${taxAmount.toFixed(2)}</span></div>
+      <div class="summary-row"><span>Fees</span><span>$${fees.toFixed(2)}</span></div>
+      <div class="summary-row total"><span>Total Due</span><span>$${total.toFixed(2)}</span></div>
+    `;
+  }
+
+  // Start with 2 blank rows
+  addRow();
+  addRow();
+</script>
+</body>
+</html>
