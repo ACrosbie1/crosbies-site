@@ -1,6 +1,336 @@
 <!DOCTYPE html>
-<html><head>
+<html lang="en">
+<head>
 <meta charset="UTF-8">
-<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
-<title></title>
-</head><body></body></html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="index, follow">
+<meta name="description" content="Crosbies Hot Sauce — Saint Vincent Caribbean heat, crafted since 2013.">
+<title>Crosbies Hot Sauce | Saint Vincent Caribbean Heat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://js.stripe.com/v3/"></script>
+<style>
+  :root{
+    --papyrus-dark:#2b1a0e;
+    --papyrus:#3e2a14;
+    --papyrus-light:#5a3d1f;
+    --gold:#d4a24c;
+    --gold-bright:#f0c674;
+    --gold-deep:#8b6500;
+    --sand:#e8d3a5;
+    --cream:#f7ecd2;
+    --ember:#c1440e;
+    --text-dark:#241505;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse at top, #4a3218 0%, #2b1a0e 55%, #1a0f08 100%);
+    color:var(--cream);
+    font-family:'EB Garamond', serif;
+    min-height:100vh;
+    position:relative;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(212,162,76,0.06) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(212,162,76,0.05) 0%, transparent 45%);
+    pointer-events:none;
+    z-index:0;
+  }
+  .sparkle{
+    position:fixed;
+    width:3px; height:3px;
+    background:var(--gold-bright);
+    border-radius:50%;
+    box-shadow:0 0 6px 2px rgba(240,198,116,0.7);
+    animation: twinkle 3.5s ease-in-out infinite;
+    z-index:1;
+    pointer-events:none;
+  }
+  @keyframes twinkle{
+    0%,100%{opacity:0.15; transform:scale(0.8);}
+    50%{opacity:1; transform:scale(1.3);}
+  }
+  header{
+    position:relative; z-index:2;
+    text-align:center;
+    padding:56px 20px 36px;
+    border-bottom:2px solid var(--gold);
+    background:linear-gradient(180deg, rgba(0,0,0,0.25), transparent);
+  }
+  .eye-of-horus{
+    width:64px; height:64px;
+    margin:0 auto 18px;
+    display:block;
+    filter:drop-shadow(0 0 10px rgba(240,198,116,0.5));
+  }
+  .brand-name{
+    font-family:'Cinzel Decorative', serif;
+    font-weight:900;
+    font-size:clamp(2rem, 5vw, 3.4rem);
+    letter-spacing:2px;
+    background:linear-gradient(180deg, var(--gold-bright), var(--gold) 60%, var(--gold-deep));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    text-shadow:0 2px 12px rgba(0,0,0,0.4);
+  }
+  .tagline{
+    font-family:'Cinzel', serif;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    font-size:0.85rem;
+    color:var(--sand);
+    margin-top:10px;
+    opacity:0.85;
+  }
+  .divider{
+    width:120px; height:2px;
+    margin:22px auto 0;
+    background:linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  nav{
+    position:relative; z-index:2;
+    display:flex; justify-content:center; gap:34px;
+    padding:16px;
+    font-family:'Cinzel', serif;
+    font-size:0.8rem;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    border-bottom:1px solid rgba(212,162,76,0.3);
+  }
+  nav a{ color:var(--gold-bright); text-decoration:none; opacity:0.8; transition:opacity .2s;}
+  nav a:hover{ opacity:1; }
+  main{ position:relative; z-index:2; max-width:1100px; margin:0 auto; padding:60px 24px;}
+  .origin{
+    text-align:center;
+    max-width:680px;
+    margin:0 auto 70px;
+  }
+  .origin h2{
+    font-family:'Cinzel Decorative', serif;
+    font-size:1.8rem;
+    color:var(--gold-bright);
+    margin-bottom:18px;
+  }
+  .origin p{
+    font-size:1.1rem;
+    line-height:1.75;
+    color:var(--sand);
+  }
+  .products{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+    gap:32px;
+    margin-bottom:60px;
+  }
+  .product-card{
+    background:linear-gradient(160deg, rgba(90,61,31,0.5), rgba(43,26,14,0.7));
+    border:1px solid var(--gold);
+    border-radius:14px;
+    padding:30px 24px;
+    text-align:center;
+    box-shadow:0 8px 30px rgba(0,0,0,0.35);
+    position:relative;
+    overflow:hidden;
+  }
+  .product-card::before{
+    content:"";
+    position:absolute; top:-2px; left:-2px; right:-2px; height:4px;
+    background:linear-gradient(90deg, var(--gold-deep), var(--gold-bright), var(--gold-deep));
+  }
+  .bottle-icon{
+    width:70px; height:70px;
+    margin:0 auto 16px;
+    color:var(--ember);
+  }
+  .product-card h3{
+    font-family:'Cinzel', serif;
+    font-size:1.3rem;
+    color:var(--gold-bright);
+    margin-bottom:8px;
+    letter-spacing:1px;
+  }
+  .product-card p.desc{
+    font-size:0.95rem;
+    color:var(--sand);
+    min-height:44px;
+    margin-bottom:16px;
+    opacity:0.9;
+  }
+  .price{
+    font-family:'Cinzel', serif;
+    font-size:1.5rem;
+    color:var(--gold);
+    margin-bottom:18px;
+  }
+  .buy-btn{
+    display:inline-block;
+    width:100%;
+    padding:13px 20px;
+    background:linear-gradient(135deg, var(--gold-deep), var(--gold));
+    color:var(--text-dark);
+    font-family:'Cinzel', serif;
+    font-weight:700;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    font-size:0.85rem;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    box-shadow:0 4px 14px rgba(139,101,0,0.4);
+    transition:transform .15s, box-shadow .15s;
+  }
+  .buy-btn:hover{ transform:translateY(-2px); box-shadow:0 6px 20px rgba(139,101,0,0.55); }
+  .buy-btn:disabled{ opacity:0.55; cursor:not-allowed; transform:none; }
+  .coming-soon{
+    text-align:center;
+    padding:40px 24px;
+    border:1px dashed rgba(212,162,76,0.4);
+    border-radius:14px;
+    color:var(--sand);
+    font-style:italic;
+    margin-bottom:60px;
+  }
+  footer{
+    position:relative; z-index:2;
+    text-align:center;
+    padding:34px 20px;
+    border-top:2px solid var(--gold);
+    background:linear-gradient(0deg, rgba(0,0,0,0.3), transparent);
+    font-family:'Cinzel', serif;
+    font-size:0.78rem;
+    letter-spacing:1.5px;
+    color:var(--sand);
+    opacity:0.85;
+  }
+  footer a{ color:var(--gold-bright); }
+
+  /* ===== ADMIN NOTE (remove before final polish if desired) ===== */
+  .admin-note{
+    max-width:1100px; margin:0 auto 40px; padding:16px 20px;
+    background:rgba(193,68,14,0.15); border:1px dashed var(--ember);
+    border-radius:10px; font-size:0.85rem; color:var(--sand);
+    font-family:'EB Garamond', serif;
+  }
+</style>
+</head>
+<body>
+
+<div class="sparkle" style="top:12%; left:15%;"></div>
+<div class="sparkle" style="top:22%; left:80%; animation-delay:1s;"></div>
+<div class="sparkle" style="top:60%; left:8%; animation-delay:2s;"></div>
+<div class="sparkle" style="top:75%; left:88%; animation-delay:1.6s;"></div>
+<div class="sparkle" style="top:40%; left:50%; animation-delay:0.6s;"></div>
+
+<header>
+  <svg class="eye-of-horus" viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M5 30 Q30 5 50 20 Q70 5 95 30 Q70 45 50 32 Q30 45 5 30Z" stroke="#d4a24c" stroke-width="2.5"/>
+    <circle cx="50" cy="27" r="9" fill="#d4a24c"/>
+    <circle cx="50" cy="27" r="4" fill="#1a0f08"/>
+    <path d="M50 36 Q46 50 38 55 Q44 46 44 38 Z" fill="#d4a24c"/>
+    <path d="M62 22 L82 16" stroke="#d4a24c" stroke-width="2.5"/>
+  </svg>
+  <div class="brand-name">CROSBIES HOT SAUCE</div>
+  <div class="tagline">Saint Vincent Caribbean Heat &middot; Est. 2013</div>
+  <div class="divider"></div>
+</header>
+
+<nav>
+  <a href="#story">Our Story</a>
+  <a href="#shop">Shop</a>
+  <a href="#contact">Contact</a>
+</nav>
+
+<main>
+
+  <div class="admin-note">
+    <strong>Admin note (visible only to you until removed):</strong> Buy buttons below are wired to load
+    Stripe.js and are ready for real Payment Link URLs and prices. Since pricing wasn't finalized yet,
+    each button currently shows a placeholder. See the build notes doc for the 3-step swap
+    (paste Stripe Payment Link, add price, done).
+  </div>
+
+  <section class="origin" id="story">
+    <h2>From Saint Vincent to Your Table</h2>
+    <p>
+      Born in the volcanic soil of Saint Vincent and raised on family recipes,
+      Crosbies Hot Sauce brings authentic Caribbean heat, crafted in small batches
+      and built to last. Every bottle carries the island with it.
+    </p>
+  </section>
+
+  <section id="shop">
+    <div class="products">
+
+      <div class="product-card">
+        <svg class="bottle-icon" viewBox="0 0 40 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="14" y="4" width="12" height="8" rx="2" fill="currentColor" opacity="0.9"/>
+          <path d="M12 12 L12 20 Q6 26 6 36 L6 52 Q6 58 12 58 L28 58 Q34 58 34 52 L34 36 Q34 26 28 20 L28 12 Z" fill="currentColor" opacity="0.75"/>
+          <rect x="9" y="34" width="22" height="16" rx="2" fill="#f0c674" opacity="0.9"/>
+        </svg>
+        <h3>Original Gold</h3>
+        <p class="desc">Placeholder flavor &middot; swap in real name, description &amp; photo</p>
+        <div class="price" data-price-placeholder>$—.—</div>
+        <button class="buy-btn" data-stripe-link="" disabled>Buy Now (add link)</button>
+      </div>
+
+      <div class="product-card">
+        <svg class="bottle-icon" viewBox="0 0 40 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="14" y="4" width="12" height="8" rx="2" fill="currentColor" opacity="0.9"/>
+          <path d="M12 12 L12 20 Q6 26 6 36 L6 52 Q6 58 12 58 L28 58 Q34 58 34 52 L34 36 Q34 26 28 20 L28 12 Z" fill="currentColor" opacity="0.75"/>
+          <rect x="9" y="34" width="22" height="16" rx="2" fill="#c1440e" opacity="0.9"/>
+        </svg>
+        <h3>Scorpion Fire</h3>
+        <p class="desc">Placeholder flavor &middot; swap in real name, description &amp; photo</p>
+        <div class="price" data-price-placeholder>$—.—</div>
+        <button class="buy-btn" data-stripe-link="" disabled>Buy Now (add link)</button>
+      </div>
+
+      <div class="product-card">
+        <svg class="bottle-icon" viewBox="0 0 40 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="14" y="4" width="12" height="8" rx="2" fill="currentColor" opacity="0.9"/>
+          <path d="M12 12 L12 20 Q6 26 6 36 L6 52 Q6 58 12 58 L28 58 Q34 58 34 52 L34 36 Q34 26 28 20 L28 12 Z" fill="currentColor" opacity="0.75"/>
+          <rect x="9" y="34" width="22" height="16" rx="2" fill="#7a9c4c" opacity="0.9"/>
+        </svg>
+        <h3>Caribbean Green</h3>
+        <p class="desc">Placeholder flavor &middot; swap in real name, description &amp; photo</p>
+        <div class="price" data-price-placeholder>$—.—</div>
+        <button class="buy-btn" data-stripe-link="" disabled>Buy Now (add link)</button>
+      </div>
+
+    </div>
+
+    <div class="coming-soon">
+      More flavors and the full lineup coming soon. Real product names, photos, and pricing
+      to be added by Sir Anthony before launch.
+    </div>
+  </section>
+
+</main>
+
+<footer id="contact">
+  Crosbies Hot Sauce Corp &middot; EIN 41-2640780 &middot; <a href="mailto:info@crosbieshotsauce.com">info@crosbieshotsauce.com</a>
+</footer>
+
+<script>
+  // Wires up any Buy Now button that has a real Stripe Payment Link URL set.
+  // To activate a product: set data-stripe-link="https://buy.stripe.com/xxxxx" on the button
+  // and remove the "disabled" attribute. This script does the rest.
+  document.querySelectorAll('.buy-btn').forEach(btn => {
+    const link = btn.getAttribute('data-stripe-link');
+    if (link) {
+      btn.removeAttribute('disabled');
+      btn.textContent = 'Buy Now';
+      btn.addEventListener('click', () => { window.location.href = link; });
+    }
+  });
+</script>
+
+</body>
+</html>
