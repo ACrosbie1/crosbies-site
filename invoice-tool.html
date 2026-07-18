@@ -97,6 +97,7 @@
       <tbody id="lineBody"></tbody>
     </table>
     <button class="add-btn" onclick="addRow()">+ Add Line Item</button>
+    <button class="add-btn" style="margin-left:10px;" onclick="addRow('Crosbies Hot Sauce Bottle', 2, 5.00)">+ Add Bottle Line ($5 ea, min 2)</button>
   </div>
 
   <div class="card">
@@ -156,11 +157,19 @@
     const taxAmount = subtotal * (taxRate / 100);
     const total = subtotal + taxAmount + fees;
 
+    let warning = '';
+    if (total > 25) {
+      warning = `<div class="summary-row" style="color:#e08a4a; font-family:'EB Garamond', serif; font-style:italic; font-size:0.85rem;">⚠ This invoice exceeds your $25 testing cap</div>`;
+    } else if (total < 10 && subtotal > 0) {
+      warning = `<div class="summary-row" style="color:#e08a4a; font-family:'EB Garamond', serif; font-style:italic; font-size:0.85rem;">⚠ Below your $10 minimum order (2 bottles)</div>`;
+    }
+
     document.getElementById('summary').innerHTML = `
       <div class="summary-row"><span>Subtotal</span><span>$${subtotal.toFixed(2)}</span></div>
       <div class="summary-row"><span>Tax (${taxRate}%)</span><span>$${taxAmount.toFixed(2)}</span></div>
       <div class="summary-row"><span>Fees</span><span>$${fees.toFixed(2)}</span></div>
       <div class="summary-row total"><span>Total Due</span><span>$${total.toFixed(2)}</span></div>
+      ${warning}
     `;
   }
 
