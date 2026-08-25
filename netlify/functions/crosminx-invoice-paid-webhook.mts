@@ -69,7 +69,7 @@ export default async (req: Request, context: Context) => {
       auto_advance: true,
       metadata: {
         source: "crosminx_invoice_paid_webhook",
-        crosbies_session_id: invoice.metadata?.crosbies_session_id || "",
+        crosbies_source_id: invoice.metadata?.crosbies_source_id || "",
         crosminx_invoice_id: invoice.id,
       },
       description: "Administrative & consulting services -- Crosbies Hot Sauce Corp",
